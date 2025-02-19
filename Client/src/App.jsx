@@ -1,8 +1,7 @@
 import { useContext, useState } from "react";
 
-import "./App.css";
 import { AuthContext } from "./FireBaseAuth/FirebaseAuth";
-import { Link, Outlet } from "react-router";
+import { Outlet } from "react-router";
 import Navbar from "./NavBar]/Navbar";
 import Footer from "./Components/Footer/Footer";
 
