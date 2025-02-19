@@ -7,7 +7,6 @@ import Footer from "./Components/Footer/Footer";
 
 function App() {
   const { hello } = useContext(AuthContext);
-  console.log(hello);
 
   return (
     <>
