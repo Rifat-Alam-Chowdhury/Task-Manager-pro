@@ -15,7 +15,10 @@ app.use(
 app.use(express.json());
 connectDB()
   .then((DB) => {
-    app.get("/", (req, res) => {
+    app.get("/", async (req, res) => {
+      // const dlt = await DB.collection("To-Do").deleteMany({});
+      // console.log(dlt);
+
       res.json("Hello from api");
     });
 
@@ -46,11 +49,23 @@ connectDB()
       const { Title, user, status, createdAt } = todo;
 
       try {
+        let No = 1;
+        const finduserfirst = await DB.collection("To-Do")
+          .find({
+            user: user,
+          })
+          .toArray();
+        console.log(finduserfirst.length);
+        if (finduserfirst.length > 0) {
+          No = finduserfirst.length + 1;
+        }
+
         const ADDTODO = await DB.collection("To-Do").insertOne({
           title: Title,
           user: user,
           status: status,
           createdAt: createdAt,
+          No: No,
         });
         return res.status(201).json({ message: "TODO ADDED" });
       } catch (error) {
@@ -115,12 +130,11 @@ connectDB()
     //status change
     app.put("/edit-Status", async (req, res) => {
       const { status, id } = req.body;
-      // console.log(status, id);
 
       try {
         const editstatus = await DB.collection("To-Do").updateOne(
           { _id: new ObjectId(id) },
-          { $set: { "todo.status": status } }
+          { $set: { status: status } }
         );
 
         if (editstatus.modifiedCount === 0) {

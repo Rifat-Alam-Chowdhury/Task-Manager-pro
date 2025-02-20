@@ -1,7 +1,18 @@
-import React from "react";
+import Hero from "../Hero/Hero";
+import Features from "../Features";
+import Pricing from "../Pricing";
 
-function Home() {
-  return <div>Home</div>;
+export default function Home() {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero  */}
+      <Hero />
+
+      {/* Features  */}
+      <Features />
+
+      {/* Pricing Section */}
+      <Pricing />
+    </div>
+  );
 }
-
-export default Home;

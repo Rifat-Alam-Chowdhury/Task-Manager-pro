@@ -1,138 +1,91 @@
+import { CheckIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import React, { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
-function SingleTodo({ list, refetch }) {
-  const [Edit, setEdit] = useState(false);
-  const [EditValue, SetEditValue] = useState("");
-  const HandleDelete = async (e) => {
-    const deleteTodo = await axios.delete(
-      `${import.meta.env.VITE_URL}Delete-Todo?id=${list._id}`
-    );
+function SingleTodo({ list, refetch, index }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState(list.title);
+  const queryClient = useQueryClient();
 
-    if (deleteTodo.status === 200) {
-      refetch();
+  const handleDelete = async () => {
+    try {
+      await axios.delete(
+        `${import.meta.env.VITE_URL}Delete-Todo?id=${list._id}`
+      );
+      toast.success("Deleted!");
+      queryClient.invalidateQueries(["All-TODO"]);
+    } catch (error) {
+      console.error("Delete error:", error);
     }
   };
 
-  const Handlesave = async () => {
-    if (EditValue.trim() === "") {
-      alert("no changes made");
-      return;
-    }
+  const handleSave = async () => {
+    if (editValue.trim() === "") return;
 
-    const edit = await axios.patch(`${import.meta.env.VITE_URL}Edit-Todo`, {
-      Todo: EditValue,
-      id: list._id,
-    });
-
-    if (edit.status === 200) {
-      refetch();
-    }
-
-    setEdit(false);
-  };
-  const status = list?.todo?.status;
-  const handleStatusClick = async (newStatus) => {
-    console.log("Status selected:", newStatus, list._id);
-    const ChangeStatus = await axios.put(
-      `${import.meta.env.VITE_URL}edit-Status`,
-      {
+    try {
+      await axios.patch(`${import.meta.env.VITE_URL}Edit-Todo`, {
+        Todo: editValue,
         id: list._id,
-        status: newStatus,
-      }
-    );
-    console.log(ChangeStatus);
-    if (ChangeStatus.status === 200) {
-      refetch();
+      });
+      queryClient.invalidateQueries(["All-TODO"]);
+      setIsEditing(false);
+      toast.success("Edited!");
+    } catch (error) {
+      console.error(error);
     }
   };
-
-  console.log(Edit);
 
   return (
-    <div className="bg-green-600 flex justify-between  ">
-      {Edit ? (
-        <>
+    <div className="  bg-gradient-to-r from-yellow-50 to-red-50 p-4 rounded-lg shadow-sm hover:shadow-md transition-all border-l-4 border-yellow-500">
+      {isEditing ? (
+        <div className="flex gap-2 w-full">
           <input
             type="text"
-            required
-            defaultValue={list.Title}
-            onChange={(e) => SetEditValue(e.target.value)}
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            className="flex-1 px-3 py-2 rounded-md border border-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-white"
+            autoFocus
           />
-          <button onClick={Handlesave} className="btn ">
-            save
+          <button
+            onClick={handleSave}
+            className="bg-gradient-to-r from-yellow-500 to-red-500 text-white px-4 py-2 rounded-md hover:from-yellow-600 hover:to-red-600 transition-colors flex items-center gap-1"
+          >
+            <CheckIcon className="h-5 w-5" />
+            Save
           </button>
-        </>
+        </div>
       ) : (
-        <>
-          <h1 className="border-2 w-full">{list.title}</h1>
-          <button onClick={(e) => setEdit(true)} className="btn">
-            edit
+        <div className="flex justify-between items-center w-full">
+          <h1 className="text-gray-800 font-medium truncate text-lg">
+            {list.title}
+          </h1>
+
+          <button
+            onClick={() => setIsEditing(true)}
+            className="text-yellow-600 hover:text-yellow-700 transition-colors p-2 rounded-full hover:bg-yellow-50"
+          >
+            <PencilIcon className="h-5 w-5" />
           </button>
-        </>
+        </div>
       )}
-      <button onClick={HandleDelete} className="btn bg-red-500">
-        delete
-      </button>
+      <div className=" flex justify-between items-center">
+        <span className="text-red-400 font-semibold">
+          {" "}
+          {new Date(list.createdAt).toLocaleString()}
+        </span>
+
+        <button
+          onClick={handleDelete}
+          className="mt-2 ml-auto px-3 py-1.5 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-md text-sm hover:shadow-md transition-all flex items-center gap-1"
+        >
+          <TrashIcon className="h-4 w-4" />
+          Delete
+        </button>
+      </div>
     </div>
   );
 }
 
-export default SingleTodo;
-
-// <div className="border-2 m-4 ">
-
-{
-  /* {Edit ? ( */
-}
-//     <>
-//       <input
-//         type="text"
-//         required
-//         defaultValue={list.Title}
-//         onChange={(e) => SetEditValue(e.target.value)}
-//       />
-//       <button onClick={Handlesave} className="btn ">
-//         save
-//       </button>
-//     </>
-//   ) : (
-//     <>
-//       <div className="flex justify-between">
-//         <h1>{list?.todo?.Title}</h1>
-//         <h1>{list?.todo?.createdAt}</h1>
-//         <button
-//           onClick={() => handleStatusClick("To-Do")}
-//           className={`btn ${
-//             status === "To-Do" ? "bg-red-500" : "bg-white"
-//           }`}
-//         >
-//           To-Do
-//         </button>
-//         <button
-//           onClick={() => handleStatusClick("In Progress")}
-//           className={`btn ${
-//             status === "In Progress" ? "bg-green-500" : "bg-white"
-//           }`}
-//         >
-//           In Progress
-//         </button>
-//         <button
-//           onClick={() => handleStatusClick("Done")}
-//           className={`btn ${
-//             status === "Done" ? "bg-yellow-500" : "bg-white"
-//           }`}
-//         >
-//           Done
-//         </button>
-//         <button onClick={() => setEdit(true)} className="btn ">
-//           edit
-//         </button>
-//       </div>
-//     </>
-//   )}
-//   <h1>{list._id}</h1>
-//   <button onClick={HandleDelete} className="btn bg-red-500">
-//     delete
-//   </button>
-// </div> */}
+export default React.memo(SingleTodo);
