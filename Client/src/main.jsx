@@ -5,13 +5,22 @@ import App from "./App.jsx";
 import FirebaseAuth from "./FireBaseAuth/FirebaseAuth.jsx";
 import Routes from "./Routes/Routes.jsx";
 import { RouterProvider } from "react-router-dom";
-
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
+const queryClient = new QueryClient();
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <FirebaseAuth>
-      <RouterProvider router={Routes}>
-        <App />
-      </RouterProvider>
-    </FirebaseAuth>
+    <QueryClientProvider client={queryClient}>
+      <FirebaseAuth>
+        <RouterProvider router={Routes}>
+          <App />
+        </RouterProvider>
+      </FirebaseAuth>
+    </QueryClientProvider>
   </StrictMode>
 );

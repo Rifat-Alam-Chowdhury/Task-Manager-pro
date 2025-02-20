@@ -4,10 +4,11 @@ const { connectDB } = require("./DATABSE");
 const app = express();
 const PORT = process.env.PORT || 5000;
 const cors = require("cors");
+const { ObjectId } = require("mongodb");
 app.use(
   cors({
     origin: "*",
-    methods: "GET,POST,PUT,DELETE",
+    methods: "GET,POST,PUT,DELETE,PATCH",
     allowedHeaders: "Content-Type,Authorization",
   })
 );
@@ -16,6 +17,89 @@ connectDB()
   .then((DB) => {
     app.get("/", (req, res) => {
       res.json("Hello from api");
+    });
+
+    //user save
+    app.post("/users", async (req, res) => {
+      try {
+        const userData = req.body;
+        const { uid, email, displayName } = userData;
+
+        const existingUser = await DB.collection("users").findOne({ uid });
+
+        if (existingUser) {
+          return res.status(201).json({ message: "User already exists" });
+        }
+
+        const newUser = await DB.collection("users").insertOne(userData);
+
+        return res.status(201).json({ message: "User created" });
+      } catch (error) {
+        console.error("Error creating user:", error);
+        return res.status(500).json({ message: "Internal Server Error" });
+      }
+    });
+
+    // add todo
+    app.post("/AddTODO", async (req, res) => {
+      const { todo } = req.body;
+      console.log(todo);
+      try {
+        const ADDTODO = await DB.collection("To-Do").insertOne({ todo });
+        return res.status(201).json({ message: "TODO ADDED" });
+      } catch (error) {
+        console.log(error);
+      }
+    });
+    //get todo
+    app.post("/GETTODO", async (req, res) => {
+      try {
+        const GETallTody = await DB.collection("To-Do").find({}).toArray();
+
+        return res.status(200).json(GETallTody);
+      } catch (error) {
+        console.log(error);
+      }
+    });
+
+    //edit todo
+    app.patch("/Edit-Todo", async (req, res) => {
+      const { Todo, id } = req.body;
+
+      try {
+        const editTodo = await DB.collection("To-Do").updateOne(
+          { _id: new ObjectId(id) },
+          { $set: { todo: Todo } }
+        );
+
+        if (editTodo.modifiedCount === 0) {
+          return res.status(400).json({ message: "No changes made." });
+        }
+
+        return res.status(200).json({ message: "Todo updated successfully." });
+      } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Error updating todo." });
+      }
+    });
+    //delete todo
+    app.delete("/Delete-Todo", async (req, res) => {
+      const { id } = req.query;
+
+      try {
+        const deleteTodo = await DB.collection("To-Do").deleteOne({
+          _id: new ObjectId(id),
+        });
+
+        if (deleteTodo.deletedCount === 0) {
+          return res.status(400).json({ message: " Something went wrong" });
+        }
+
+        return res.status(200).json({ message: "Todo deleted successfully." });
+      } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Error deleting todo." });
+      }
     });
 
     app.listen(PORT, () => {
