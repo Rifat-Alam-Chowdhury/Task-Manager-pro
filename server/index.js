@@ -43,7 +43,7 @@ connectDB()
     // add todo
     app.post("/AddTODO", async (req, res) => {
       const { todo } = req.body;
-      console.log(todo);
+
       try {
         const ADDTODO = await DB.collection("To-Do").insertOne({ todo });
         return res.status(201).json({ message: "TODO ADDED" });
@@ -99,6 +99,30 @@ connectDB()
       } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Error deleting todo." });
+      }
+    });
+
+    //status change
+    app.put("/edit-Status", async (req, res) => {
+      const { status, id } = req.body;
+      // console.log(status, id);
+
+      try {
+        const editstatus = await DB.collection("To-Do").updateOne(
+          { _id: new ObjectId(id) },
+          { $set: { "todo.status": status } }
+        );
+
+        if (editstatus.modifiedCount === 0) {
+          return res.status(400).json({ message: "No changes made." });
+        }
+
+        return res
+          .status(200)
+          .json({ message: "Status updated successfully." });
+      } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Error updating todo." });
       }
     });
 

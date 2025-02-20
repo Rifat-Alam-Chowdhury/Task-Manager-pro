@@ -1,13 +1,30 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import ShowTodolists from "../ShowTodo/ShowTodolists";
+import { AuthContext } from "../../FireBaseAuth/FirebaseAuth";
 
 function AddTask() {
-  const [todo, setTodo] = useState("");
+  const { currentUser } = useContext(AuthContext);
   const [refetch, setrefetch] = useState(false);
+  const [todo, setTodo] = useState({
+    Title: "",
+    user: currentUser.uid,
+    status: "",
+    createdAt: new Date(),
+  });
+
   const handleChange = (e) => {
-    setTodo(e.target.value);
+    setTodo((prev) => ({
+      ...prev,
+      Title: e.target.value,
+    }));
+  };
+  const handleStatusChange = (e) => {
+    setTodo((prev) => ({
+      ...prev,
+      status: e.target.value,
+    }));
   };
 
   const UpdateTodo = async () => {
@@ -17,7 +34,10 @@ function AddTask() {
       todo,
     });
     if (ADDTODO.status === 201) {
-      setTodo("");
+      setTodo({
+        ...todo,
+        Title: "",
+      });
       setrefetch(true);
     }
   };
@@ -29,10 +49,22 @@ function AddTask() {
           <div className="flex justify-between gap-5">
             <input
               type="text"
-              value={todo}
               onChange={handleChange}
+              value={todo.Title}
               className="border p-2 w-full rounded-md"
             />
+            <select
+              onChange={handleStatusChange}
+              value={todo.status}
+              className="border p-2 rounded-md"
+            >
+              <option value="" disabled>
+                Select Status
+              </option>
+              <option value="To-Do">To-Do</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Done">Done</option>
+            </select>
             <button onClick={UpdateTodo} className="btn">
               Add
             </button>

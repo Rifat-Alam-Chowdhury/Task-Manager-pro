@@ -21,17 +21,9 @@ function ShowTodolists({ refetch: refetchs }) {
     refetch();
   }
 
-  const HandleDelete = async (e) => {
-    console.log(e);
-
-    const edit = await axios.patch(`${import.meta.env.VITE_URL}Edit-Todo`, {
-      Todo: EditedTodo,
-    });
-  };
-
   return (
     <>
-      <div className="mt-5">
+      <div className="mt-5 border-2 border-pink-500">
         {ALLTODO?.map((list) => (
           <>
             <SingleTodo refetch={refetch} key={list._id} list={list} />
