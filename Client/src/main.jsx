@@ -14,13 +14,11 @@ import {
 } from "@tanstack/react-query";
 const queryClient = new QueryClient();
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <FirebaseAuth>
-        <RouterProvider router={Routes}>
-          <App />
-        </RouterProvider>
-      </FirebaseAuth>
-    </QueryClientProvider>
-  </StrictMode>
+  <QueryClientProvider client={queryClient}>
+    <FirebaseAuth>
+      <RouterProvider router={Routes}>
+        <App />
+      </RouterProvider>
+    </FirebaseAuth>
+  </QueryClientProvider>
 );

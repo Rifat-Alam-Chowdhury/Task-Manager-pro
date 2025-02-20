@@ -43,9 +43,15 @@ connectDB()
     // add todo
     app.post("/AddTODO", async (req, res) => {
       const { todo } = req.body;
+      const { Title, user, status, createdAt } = todo;
 
       try {
-        const ADDTODO = await DB.collection("To-Do").insertOne({ todo });
+        const ADDTODO = await DB.collection("To-Do").insertOne({
+          title: Title,
+          user: user,
+          status: status,
+          createdAt: createdAt,
+        });
         return res.status(201).json({ message: "TODO ADDED" });
       } catch (error) {
         console.log(error);
@@ -53,8 +59,12 @@ connectDB()
     });
     //get todo
     app.post("/GETTODO", async (req, res) => {
+      const { email } = req.query;
+
       try {
-        const GETallTody = await DB.collection("To-Do").find({}).toArray();
+        const GETallTody = await DB.collection("To-Do")
+          .find({ user: email })
+          .toArray();
 
         return res.status(200).json(GETallTody);
       } catch (error) {
@@ -69,7 +79,7 @@ connectDB()
       try {
         const editTodo = await DB.collection("To-Do").updateOne(
           { _id: new ObjectId(id) },
-          { $set: { todo: Todo } }
+          { $set: { title: Todo } }
         );
 
         if (editTodo.modifiedCount === 0) {
