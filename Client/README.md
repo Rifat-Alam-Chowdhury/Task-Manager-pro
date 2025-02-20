@@ -33,7 +33,7 @@ To run the project locally, follow these steps:
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/your-username/task-manager-pro.git
+   git clone https://github.com/Rifat-Alam-Chowdhury/Task-Manager-pro/tree/main
    cd task-manager-pro
    ```
 
@@ -117,7 +117,3 @@ Contributions, issues, and feature requests are welcome!
 Feel free to check the [issues page](https://github.com/your-username/task-manager-pro/issues).
 
 ---
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

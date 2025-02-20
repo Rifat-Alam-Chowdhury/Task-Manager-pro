@@ -33,7 +33,7 @@ To run the backend locally, follow these steps:
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/your-username/task-manager-pro-backend.git
+   git clone https://github.com/Rifat-Alam-Chowdhury/Task-Manager-pro.git
    cd task-manager-pro-backend
    ```
 
@@ -120,7 +120,3 @@ Contributions, issues, and feature requests are welcome!
 Feel free to check the [issues page](https://github.com/your-username/task-manager-pro-backend/issues).
 
 ---
-
-## License
-
-This project is licensed under the ISC License - see the [LICENSE](LICENSE) file for details.
